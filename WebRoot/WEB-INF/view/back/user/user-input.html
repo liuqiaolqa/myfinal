@@ -1,0 +1,71 @@
+<#--
+/****************************************************
+ * Description: 用户的输入页面，包括添加和修改
+ * Copyright:   Copyright (c) 2014
+ * Company:     beiwaionline
+ * @author      bfsu
+ * @version     1.0
+ * @see
+	HISTORY
+    *  2014-08-21 bfsu Create File
+**************************************************/
+-->
+<#include "/templates/ace/ace-inc.ftl">
+<script type="text/javascript">
+	function uploadCallBack(info,fileId){
+		if(info){
+			$.ajax({
+        		type:'post',
+        		url:'${base}/ucenter/user/getRealName?fileId='+fileId,
+        		success:function(msg){
+        		 	$("#localImag2").show();
+        			$("#preview2").prop("src","${base}/"+msg.item);
+        			$(".qq-upload-delete").click(function(){
+	            		$("#localImag2").hide();
+			            $("#preview2").prop("src","");
+	            	});
+        		}
+        	});
+		}
+	}
+</script>
+<@input url="${base}/ucenter/user/save">
+    <input type="hidden" name="id" value="${user.id}"/>
+    <input type="hidden" name="baseUser.id" value="${user?if_exists.baseUser?if_exists.id}"/>
+	
+    <#if !user?if_exists.id?if_exists>
+    	<#if !user?if_exists.baseUser?if_exists.id>
+    		<@formgroup title='登录名'><input type="text" name="baseUser.loginName" value="${user?if_exists.baseUser?if_exists.loginName}" check-type="required" minlength="5" maxlength="50" ></@formgroup>
+    	<#else>
+    		<@formgroup title='登录名'><input type="text" name="baseUser.loginName" value="${user?if_exists.baseUser?if_exists.loginName}" check-type="required" minlength="5" maxlength="50"readonly="readonly" ></@formgroup>
+    	</#if>
+    <#else>
+		<@formgroup title='登录名'><input type="text" name="baseUser.loginName" value="${user?if_exists.baseUser?if_exists.loginName}" check-type="required" minlength="5" maxlength="50" readonly="readonly" ></@formgroup>
+    </#if>
+    <#if !user?if_exists.id?if_exists>
+    	<#if !user?if_exists.baseUser?if_exists.id>
+    		<@formgroup title='密码'><input type="password" name="baseUser.password" value="${user?if_exists.baseUser?if_exists.password}" check-type="required charPwd" minlength="6" maxlength="10" ></@formgroup>
+    	</#if>
+    </#if>
+    <@formgroup title='姓名'><input type="text" name="baseUser.userName" value="${user?if_exists.baseUser?if_exists.userName}" check-type="required chinese" minlength="2" maxlength="10"></@formgroup>
+    <@formgroup title='性别'><@select list=Constants.USER_GENDER id='gender' name='baseUser.gender' value="${user?if_exists.baseUser?if_exists.gender}"/></@formgroup>
+    <@formgroup title='照片'>
+    	<script type="text/javascript">
+        	_reload();
+        	function _reload(){
+        		var imgSrc = '${user?if_exists.baseUser?if_exists.imgUrl}';
+        		if(imgSrc!=""){
+        			$("#localImag2").show();
+        			$("#preview2").prop("src","${base}/"+imgSrc);
+        		}
+        	}
+        </script>
+        <#if !flag??>
+			<@upload uploadPath="/beiwai_mdms/user" datepath="true" callBackFunc="uploadCallBack" format="true" multiple='false' fileId="fileId"></@upload>
+			<b><font style="color:red;">&nbsp;&nbsp;说明：请上传格式为（.jpg 或 .png 或 .gif）大小不超过2M的图片</font></b>
+        </#if>
+    	<div id="localImag2" style="display:none;">
+	    	<img id="preview2"  src="" style="width: 280px; height: 160px;"/>
+		</div>
+	</@formgroup>
+</@input>

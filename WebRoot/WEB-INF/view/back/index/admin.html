@@ -1,0 +1,47 @@
+<#include "/WEB-INF/view/templates/ace/ace-inc.ftl"> 
+<@html>
+<@head editor=true import=true>
+
+
+<script type="text/javascript" charset="utf-8">
+$(function() {
+	//initMenuTree();
+});
+function menuClick(itemUrl, obj){
+
+	$('ul.nav-list > li > ul.nav-show, .nav-hide').each(function(){
+		if($(this).attr('id') != $(obj).closest('.submenu').attr('id')){
+			$(this).attr('class', 'submenu').css('display', 'none');
+			$(this).parent().removeClass('open active');
+		} 
+	});
+
+	$('ul.submenu > li').removeClass('active');
+
+	if(obj != null && obj != undefined){
+		$(obj).parent().addClass('active');
+		$(obj).closest('.open').addClass('active');
+	}
+	bfsu.html(itemUrl);
+}
+
+</script>
+</@head>
+<@body head=true foot=true class="no-skin">
+	<div class="main-container" id="main-container">
+	<script type="text/javascript">
+		try{ace.settings.check('main-container' , 'fixed')}catch(e){}
+	</script>
+	<div id="sidebar" class="sidebar                  responsive">
+		<script type="text/javascript">
+			try{ace.settings.check('sidebar' , 'fixed')}catch(e){}
+		</script>
+		<@sidebar list=siderbarList listType='type' listLabel='label' listIcon='icon' listUrl='url' id="sidebar-shortcuts"/>
+		<@leftMenu menu=menu/>			
+	</div>
+	<div id="bscenter" class="main-content"></div>
+	<@ace_footer />
+	<@ace_btn_up id="btn-scroll-up"/>
+</div>
+</@body>
+</@html>

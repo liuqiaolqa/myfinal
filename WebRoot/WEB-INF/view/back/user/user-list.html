@@ -1,0 +1,140 @@
+<#--
+/****************************************************
+ * Description: 管理员的简单列表页面，没有编辑功能
+ * Copyright:   Copyright (c) 2014
+ * Company:     beiwaionline
+ * @author      bfsu
+ * @version     1.0
+ * @see
+	HISTORY
+    *  2014-08-21 bfsu Create File
+**************************************************/
+-->
+<#include "/templates/bs-beiwai-pm.ftl">
+<#--<script type="text/javascript" charset="utf-8">
+	function addRoles(userId){
+		bfsu.dialog({url:"${base}/ucenter/user/addRoles/"+userId,title:"分配角色",onOk:function(){
+				var userIds = $('input[name="roleIds"]:checked');
+				if(null == userIds.val() || userIds.val().length<=0){
+					bfsu.msger("请选择一条记录!");
+				} else {
+					$('button.bsok').attr("disabled",true);
+					var userId_Array = new Array();
+					userIds.each(function(){
+						userId_Array.push($(this).val());
+					});
+					$.ajax({
+					type: "post",
+					traditional: true,
+					url: "${base}/ucenter/user/saveRoles/"+userId,
+					data: {"agentIds":userId_Array},
+					success: function(result){
+							if(result.result == 'success'){
+								bfsu.msgok("保存成功");
+								$("#bsmodal").modal('hide');
+								var url = "${base}/ucenter/user/list/${srcOrg}/${orgId}/${srcDept}/${deptId}";
+								bfsu.list({id:'${id}',url:url});
+							} else {
+								bfsu.msger(result.message);
+								$('button.bsok').attr("disabled",false);
+							}
+						}
+					});
+				}
+		}});
+	}
+</script>-->
+<@list>
+    <thead>
+        <tr>
+	        <th class='ace-icon'><input class="ace ace-checkbox-2 bscheckall " type="checkbox"/><span class="lbl"></span></th>
+	        <th>登录名</th>
+	        <th>姓名</th>
+	        <!--
+	        <th>机构</th>
+	        <th>部门</th>
+	        <th>基本角色</th>
+	        -->
+	        <th>状态</th>
+	        <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        <#list page.items?if_exists as item>
+	        <tr>
+	        	<td class='ace-icon'>
+					<input class="ace ace-checkbox-2 bscheck" type="checkbox" data="id:${item.id}"/><span class="lbl"></span>
+		        </td>
+	            <td>
+	                <@contentTip title='' container='body' toggle='popover' desc="${item?if_exists.baseUser?if_exists.loginName}" 
+	                	tip="${item?if_exists.baseUser?if_exists.loginName}" placement='auto' trigger='hover' subStr=true subLen='15'>
+	                </@contentTip>
+	            </td>
+	            <td>
+	                <@contentTip title='' container='body' toggle='popover' desc="${item?if_exists.baseUser?if_exists.userName}" 
+	                	tip="${item?if_exists.baseUser?if_exists.userName}" placement='auto' trigger='hover' subStr=true subLen='15'>
+	                </@contentTip>
+	            </td>
+	            <td>
+	            	<#if item.status == Constants.STATUS_VALID><span class="label label-warning"><#else><span class="label label-info"></#if>
+                	${getIntText(item?if_exists.baseUser?if_exists.status)}</span>
+	            </td>
+	            <!--
+	            <td>
+	                <@contentTip title='' container='body' toggle='popover' desc="${item?if_exists.org?if_exists.title}" 
+	                	tip="${item?if_exists.org?if_exists.title}" placement='auto' trigger='hover' subStr=true subLen='15'>
+	                </@contentTip>
+	            </td>
+	            <td>
+	                <@contentTip title='' container='body' toggle='popover' desc="${item?if_exists.dept?if_exists.title}" 
+	                	tip="${item?if_exists.dept?if_exists.title}" placement='auto' trigger='hover' subStr=true subLen='15'>
+	                </@contentTip>
+	            </td>
+	            <td>
+	                <#if item.baseUser.roles?exists>
+	            		<#list item.baseUser.roles?if_exists as role>
+	            			<@contentTip title='' container='body' toggle='popover' desc="${role?if_exists.title}" 
+			                	tip="${role?if_exists.title}" placement='auto' trigger='hover' subStr=true subLen='15'>
+			                </@contentTip>
+	            			<br>
+	            		</#list>
+	            	</#if>
+	            </td>
+	            -->
+	            <td>
+	            	<div class="pull-left action-buttons">
+						<a class="green" title="修改"  href="#" onclick="bfsu.edit('${base}/ucenter/user/input/${item.id}','修改用户');"><i class="ace-icon fa fa-pencil bigger-130"></i></a>
+						<a class="green" title="预览"  href="#" onclick="bfsu.view('${base}/ucenter/user/preview/${item.id}','预览用户');"><i class="ace-icon fa fa-eye bigger-130"></i></a>
+						<a class="red" title="删除" href="#" onclick="bfsu.del('${base}/ucenter/user/delete/${item.id}','删除用户？');"><i class="ace-icon fa fa-trash-o bigger-130"></i></a>
+						<#if item.baseUser.status == Constants.STATUS_VALID> 
+		                	<a class="red" title="禁用" href="#" onclick="bfsu.del('${base}/ucenter/user/unEnable/${item.id}','确实要禁用吗？');"><i class="ace-icon fa fa-ban bigger-130"></i></a>
+		            	<#else>
+		            		<a class="blue" title="启用" href="#" onclick="bfsu.del('${base}/ucenter/user/enable/${item.id}','确实要启用吗？');"><i class="ace-icon fa fa-check-circle-o bigger-130"></i></a>
+		            	</#if>
+	            	</div>
+	            	<#--
+	            	<@button icon="pencil" type="primary" size="sm"
+						onclick="bfsu.edit('${base}/ucenter/user/input/${item.id}','修改用户');">修改</@button>
+	            	<@button icon="eye-open" type="primary" size="sm"
+						onclick="bfsu.view('${base}/ucenter/user/preview/${item.id}','预览用户');">预览</@button>
+					<#if item.id gt 1>
+					<@button icon="remove" type="primary" size="sm" 
+						onclick="bfsu.del('${base}/ucenter/user/delete/${item.id}','删除用户？');">删除</@button>
+					</#if>
+					<#if item.baseUser.status == Constants.STATUS_VALID>
+	                	<@button icon="ban-circle" type="primary" size="sm" 
+							onclick="bfsu.del('${base}/ucenter/user/unEnable/${item.id}','确实要禁用吗？');">禁用</@button>
+	                <#else>
+	                	<@button icon="ok-circle" type="primary" size="sm" 
+							onclick="bfsu.del('${base}/ucenter/user/enable/${item.id}','确实要启用吗？');">启用</@button>
+	                </#if>
+	                -->
+	                <#--
+	                <@button icon="pushpin" type="primary" size="sm" 
+						onclick="bfsu.edit('${base}/ucenter/user/configRoles/${item.id}','修改用户');">角色配置</@button>
+					-->
+	            </td>
+	        </tr>
+        </#list>
+    </tbody>
+</@list>
